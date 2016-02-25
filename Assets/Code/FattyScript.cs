@@ -19,12 +19,23 @@ public class FattyScript : MonoBehaviour {
     public SpringJoint2D fattyJawSpring4;
     public GameObject fatController;
 
+    public GameObject vomitCenter;
+    private float vomitCenterMaxRate;
+    public GameObject vomitSideR;
+    public GameObject vomitSideL;
+    private float vomitSidesMaxRate;
+    public GameObject bubbleR;
+    public GameObject bubbleL;
+
     public AnimationCurve vomitAmount;
 
     private float deformation = 1f;
     private Vector2 targetFatScale = new Vector2(0f, 0f);
 
     private static float maxFat = 1.3f;
+
+    private float maxBleeding = 4f;
+    private float bleeding = 0f;
 
 	// Use this for initialization
 	void Start () {
@@ -35,6 +46,14 @@ public class FattyScript : MonoBehaviour {
         creepyItems = Resources.LoadAll<GameObject>("Sprites/Fatty/Items/Prefabs/Creepy");
         GlobalData.lastMousePosition = Input.mousePosition;
 
+        vomitCenter.GetComponent<ParticleSystem>().enableEmission = false;
+        vomitCenterMaxRate = vomitCenter.GetComponent<ParticleSystem>().emissionRate;
+        vomitSideR.GetComponent<ParticleSystem>().enableEmission = false;
+        vomitSideL.GetComponent<ParticleSystem>().enableEmission = false;
+        vomitSidesMaxRate = vomitSideR.GetComponent<ParticleSystem>().emissionRate;
+        bubbleR.GetComponent<ParticleSystem>().enableEmission = false;
+        bubbleL.GetComponent<ParticleSystem>().enableEmission = false;
+
 	}
 
     public void AddFat()
@@ -43,6 +62,10 @@ public class FattyScript : MonoBehaviour {
         targetFatScale = new Vector2(Mathf.Clamp(fatController.transform.localScale.x*1.05f, 0f, maxFat), Mathf.Clamp(fatController.transform.localScale.y*1.05f, 0f, maxFat));
     }
 
+    public void Blood()
+    {
+        bleeding = maxBleeding;
+    }
     
     void FixedUpdate()
     {
@@ -82,20 +105,7 @@ public class FattyScript : MonoBehaviour {
         CheckRespawn();
 
         UpdateFat();
-
-        /*
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if (fattyJawSpring1.enabled)
-            {
-                OpenMouth();
-            }
-            else
-            {
-                CloseMouth();
-            }
-        }
-        */
+        UpdateBlood();
 
         if (GlobalData.eatableObjects > 0 && fattyJawSpring1.enabled)
         {
@@ -121,6 +131,41 @@ public class FattyScript : MonoBehaviour {
             float scaleX = Mathf.Lerp(fatController.transform.localScale.x, targetFatScale.x*deformation, Time.deltaTime*10f);
             float scaleY = Mathf.Lerp(fatController.transform.localScale.y, targetFatScale.y * deformation, Time.deltaTime*10f);
             fatController.transform.localScale = new Vector3(scaleX, scaleY, fatController.transform.localScale.z);
+        }
+    }
+
+    void UpdateBlood()
+    {
+        if (bleeding > 0f)
+        {
+
+            float auxAmount = (maxBleeding - bleeding) / maxBleeding;
+
+            if (fattyJawSpring1.enabled)
+            {
+                // CLOSED MOUTH
+                vomitCenter.GetComponent<ParticleSystem>().enableEmission = false;
+                vomitSideR.GetComponent<ParticleSystem>().enableEmission = true;
+                vomitSideL.GetComponent<ParticleSystem>().enableEmission = true;
+                vomitSideR.GetComponent<ParticleSystem>().emissionRate = vomitAmount.Evaluate(auxAmount) * vomitSidesMaxRate;
+                vomitSideL.GetComponent<ParticleSystem>().emissionRate = vomitAmount.Evaluate(auxAmount) * vomitSidesMaxRate;
+            }
+            else
+            {
+                // OPENED MOUTH
+                vomitCenter.GetComponent<ParticleSystem>().enableEmission = true;
+                vomitCenter.GetComponent<ParticleSystem>().emissionRate = vomitAmount.Evaluate(auxAmount)*vomitCenterMaxRate;
+                vomitSideR.GetComponent<ParticleSystem>().enableEmission = false;
+                vomitSideL.GetComponent<ParticleSystem>().enableEmission = false;
+            }
+
+            bleeding -= Time.deltaTime;
+            if (bleeding <= 0f) { 
+                bleeding = 0f;
+                vomitCenter.GetComponent<ParticleSystem>().enableEmission = false;
+                vomitSideR.GetComponent<ParticleSystem>().enableEmission = false;
+                vomitSideL.GetComponent<ParticleSystem>().enableEmission = false;
+            }
         }
     }
 

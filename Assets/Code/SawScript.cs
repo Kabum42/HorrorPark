@@ -46,14 +46,19 @@ public class SawScript : MonoBehaviour {
 
     void OnCollisionEnter2D(Collision2D coll)
     {
-        if (GlobalData.grabbedObject == coll.gameObject)
+
+        if (coll.gameObject.GetComponent<DestructibleScript>() != null)
         {
-            GlobalData.grabbedObject = null;
+            if (GlobalData.grabbedObject == coll.gameObject)
+            {
+                GlobalData.grabbedObject = null;
+            }
+            SawingObject sO = new SawingObject(coll.gameObject);
+            Destroy(sO.root.GetComponent<Collider2D>());
+            Destroy(sO.root.GetComponent<Rigidbody2D>());
+            currentSawingObjects.Add(sO);
         }
-        SawingObject sO = new SawingObject(coll.gameObject);
-        Destroy(sO.root.GetComponent<Collider2D>());
-        Destroy(sO.root.GetComponent<Rigidbody2D>());
-        currentSawingObjects.Add(sO);
+        
     }
 
     public class SawingObject

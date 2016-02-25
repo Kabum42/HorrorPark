@@ -3,11 +3,14 @@ using System.Collections;
 
 public class ItemScript : MonoBehaviour {
 
+    public bool bloody = false;
     public bool digested = false;
     public float letGo = 0f;
 
 	// Use this for initialization
 	void Start () {
+
+        this.gameObject.AddComponent<DestructibleScript>();
 
 	}
 	
@@ -28,7 +31,15 @@ public class ItemScript : MonoBehaviour {
         {
             if (this.transform.position.x > -2f && this.transform.position.x < 2f) {
                 Destroy(this.gameObject);
-                Camera.main.gameObject.GetComponent<FattyScript>().AddFat();
+                if (bloody)
+                {
+                    Camera.main.gameObject.GetComponent<FattyScript>().Blood();
+                }
+                else
+                {
+                    Camera.main.gameObject.GetComponent<FattyScript>().AddFat();
+                }
+                
             }
             else {
                 this.gameObject.layer = LayerMask.NameToLayer("Default");

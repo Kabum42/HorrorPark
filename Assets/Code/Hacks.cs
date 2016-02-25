@@ -169,4 +169,20 @@ public static class Hacks
 
     }
 
+    // PARENT
+    public static Transform GetSuperParent(Transform origin)
+    {
+        if (origin.parent != null) { return GetSuperParent(origin.parent); }
+        return origin;
+    }
+
+    // LAYER
+    public static void SetLayerRecursively(GameObject go, int layerNumber)
+    {
+        foreach (Transform trans in go.GetComponentsInChildren<Transform>(true))
+        {
+            trans.gameObject.layer = layerNumber;
+        }
+    }
+
 }
