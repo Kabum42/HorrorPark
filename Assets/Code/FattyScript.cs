@@ -18,6 +18,7 @@ public class FattyScript : MonoBehaviour {
     public SpringJoint2D fattyJawSpring3;
     public SpringJoint2D fattyJawSpring4;
     public GameObject fatController;
+	public GameObject mollasController;
 
     public GameObject vomitCenter;
     private float vomitCenterMaxRate;
@@ -58,8 +59,8 @@ public class FattyScript : MonoBehaviour {
 
     public void AddFat()
     {
-        deformation = 1.2f;
-        targetFatScale = new Vector2(Mathf.Clamp(fatController.transform.localScale.x*1.05f, 0f, maxFat), Mathf.Clamp(fatController.transform.localScale.y*1.05f, 0f, maxFat));
+        deformation = 1.3f;
+        targetFatScale = new Vector2(Mathf.Clamp(fatController.transform.localScale.x*1.01f, 0f, maxFat), Mathf.Clamp(fatController.transform.localScale.y*1.01f, 0f, maxFat));
     }
 
     public void Blood()
@@ -131,6 +132,7 @@ public class FattyScript : MonoBehaviour {
             float scaleX = Mathf.Lerp(fatController.transform.localScale.x, targetFatScale.x*deformation, Time.deltaTime*10f);
             float scaleY = Mathf.Lerp(fatController.transform.localScale.y, targetFatScale.y * deformation, Time.deltaTime*10f);
             fatController.transform.localScale = new Vector3(scaleX, scaleY, fatController.transform.localScale.z);
+			mollasController.transform.localScale = new Vector3 (scaleX, 1f + (scaleY - 1f) / 2f, mollasController.transform.localScale.z);
         }
     }
 
