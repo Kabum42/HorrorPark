@@ -13,8 +13,12 @@ public class GusanoDisparent : MonoBehaviour {
 
         if (this.gameObject.transform.parent != null && this.GetComponent<SpringJoint2D>() == null)
         {
-            this.gameObject.AddComponent<DestructibleScript>();
             this.gameObject.transform.parent = null;
+			//if (this.gameObject.layer == LayerMask.NameToLayer("
+			this.gameObject.layer = LayerMask.NameToLayer("Default");
+			ItemScript i = this.gameObject.AddComponent<ItemScript> ();
+			i.addFat = false;
+			i.bloody = false;
         }
 	
 	}

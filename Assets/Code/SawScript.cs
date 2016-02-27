@@ -24,7 +24,7 @@ public class SawScript : MonoBehaviour {
 	    {
 	        sO.sawingProcess += Time.deltaTime * (1f / timeToSaw);
 
-            if (sO.sawingProcess <= 1f) {
+			if (sO.sawingProcess <= 1f && sO.root != null) {
 
                 sO.root.transform.position = sO.origin + sO.sawingProcess * direction * 4f + new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), 0f);
 
@@ -41,21 +41,26 @@ public class SawScript : MonoBehaviour {
             currentSawingObjects.Remove(sO);
             Destroy(sO.root);
         }
+
+		toErase.Clear ();
 	
 	}
 
     void OnCollisionEnter2D(Collision2D coll)
     {
 
-        if (coll.gameObject.GetComponent<DestructibleScript>() != null)
+        if (coll.gameObject.GetComponent<ItemScript>() != null)
         {
             if (GlobalData.grabbedObject == coll.gameObject)
             {
                 GlobalData.grabbedObject = null;
             }
             SawingObject sO = new SawingObject(coll.gameObject);
+			//if (sO.root.GetComponent<Gusano> ()) { Destroy(sO.root.GetComponent<Gusano>()); }
+			//if (sO.root.GetComponent<HingeJoint2D> ()) { Destroy(sO.root.GetComponent<HingeJoint2D>()); }
+			//if (sO.root.GetComponent<SpringJoint2D> ()) { Destroy(sO.root.GetComponent<SpringJoint2D>()); }
             Destroy(sO.root.GetComponent<Collider2D>());
-            Destroy(sO.root.GetComponent<Rigidbody2D>());
+            //Destroy(sO.root.GetComponent<Rigidbody2D>());
             currentSawingObjects.Add(sO);
         }
         

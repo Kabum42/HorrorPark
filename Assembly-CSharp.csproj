@@ -47,7 +47,6 @@
   <ItemGroup>
      <Compile Include="Assets\Code\ClampRotationScript.cs" />
      <Compile Include="Assets\Code\CycleSprites.cs" />
-     <Compile Include="Assets\Code\DestructibleScript.cs" />
      <Compile Include="Assets\Code\DragScript.cs" />
      <Compile Include="Assets\Code\FattyHead.cs" />
      <Compile Include="Assets\Code\FattyScript.cs" />

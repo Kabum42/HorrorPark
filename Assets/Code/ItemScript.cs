@@ -3,14 +3,13 @@ using System.Collections;
 
 public class ItemScript : MonoBehaviour {
 
+	public bool addFat = false;
     public bool bloody = false;
     public bool digested = false;
     public float letGo = 0f;
 
 	// Use this for initialization
 	void Start () {
-
-        this.gameObject.AddComponent<DestructibleScript>();
 
 	}
 	
@@ -35,7 +34,7 @@ public class ItemScript : MonoBehaviour {
                 {
                     Camera.main.gameObject.GetComponent<FattyScript>().Blood();
                 }
-                else
+				if (addFat)
                 {
                     Camera.main.gameObject.GetComponent<FattyScript>().AddFat();
                 }
@@ -75,6 +74,9 @@ public class ItemScript : MonoBehaviour {
             }
             digested = true;
             GlobalData.eatableObjects--;
+			if (GlobalData.eatableObjects < 0) {
+				GlobalData.eatableObjects = 0;
+			}
         }
     }
     
@@ -86,6 +88,9 @@ public class ItemScript : MonoBehaviour {
             this.gameObject.layer = LayerMask.NameToLayer("Default");
             this.gameObject.transform.position = new Vector3(this.gameObject.transform.position.x, this.gameObject.transform.position.y, -3f);
             GlobalData.eatableObjects--;
+			if (GlobalData.eatableObjects < 0) {
+				GlobalData.eatableObjects = 0;
+			}
             //this.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f);
         }
     }

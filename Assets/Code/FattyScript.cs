@@ -8,7 +8,7 @@ public class FattyScript : MonoBehaviour {
 
     private static float cooldownRespawnMax = 2f;
     private float cooldownRespawn = 0f;
-    private Vector3 respawnLocation = new Vector3(-20f, -0.23f, -3f);
+    private Vector3 respawnLocation = new Vector3(-20f, 1f, -3f);
 
     private GameObject[] normalItems;
     private GameObject[] creepyItems;
@@ -70,7 +70,6 @@ public class FattyScript : MonoBehaviour {
     
     void FixedUpdate()
     {
-
         if (GlobalData.grabbedObject != null)
         {
             GlobalData.grabbedObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0f, 0f);
