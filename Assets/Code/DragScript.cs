@@ -4,6 +4,10 @@ using System.Collections;
 public class DragScript : MonoBehaviour
 {
 
+	void OnMouseOver() {
+		GlobalData.hoverObject = 2;
+	}
+
     void OnMouseDown()
     {
         GlobalData.grabbedObject = this.gameObject;

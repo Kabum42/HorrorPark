@@ -35,8 +35,14 @@ public class FattyScript : MonoBehaviour {
 
     private static float maxFat = 1.3f;
 
-    private float maxBleeding = 4f;
-    private float bleeding = 0f;
+	public string currentMode = "normal";
+
+	private float vomiting = 0f;
+
+	private Color bloodColor = new Color(147f/255f, 0f, 0f);
+	private float maxVomitingBlood = 4f;
+
+	public AudioSource gulpSound;
 
 	// Use this for initialization
 	void Start () {
@@ -55,6 +61,10 @@ public class FattyScript : MonoBehaviour {
         bubbleR.GetComponent<ParticleSystem>().enableEmission = false;
         bubbleL.GetComponent<ParticleSystem>().enableEmission = false;
 
+		gulpSound = this.gameObject.AddComponent<AudioSource> ();
+		gulpSound.clip = Resources.Load("Sound/Gulp") as AudioClip;
+		gulpSound.playOnAwake = false;
+
 	}
 
     public void AddFat()
@@ -65,8 +75,14 @@ public class FattyScript : MonoBehaviour {
 
     public void Blood()
     {
-        bleeding = maxBleeding;
+        vomiting = maxVomitingBlood;
+		vomitCenter.GetComponent<ParticleSystem> ().startColor = bloodColor;
+		vomitSideR.GetComponent<ParticleSystem> ().startColor = bloodColor;
+		vomitSideL.GetComponent<ParticleSystem> ().startColor = bloodColor;
+		currentMode = "blood";
     }
+
+
     
     void FixedUpdate()
     {
@@ -75,19 +91,15 @@ public class FattyScript : MonoBehaviour {
             GlobalData.grabbedObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0f, 0f);
 
             Vector3 worldPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f));
-            Vector2 targetPosition = GlobalData.grabbedObject.GetComponent<Rigidbody2D>().position;
+			Vector2 targetPosition = new Vector2(worldPosition.x, worldPosition.y) - GlobalData.offset;;
 
             
-            if (Vector2.Distance(GlobalData.grabbedObject.GetComponent<Rigidbody2D>().position, new Vector2(worldPosition.x, worldPosition.y)) > 0.7f)
+            if (Vector2.Distance(GlobalData.grabbedObject.GetComponent<Rigidbody2D>().position, targetPosition) > 0.7f)
             {
-                Vector2 direction = (new Vector2(worldPosition.x, worldPosition.y) - GlobalData.grabbedObject.GetComponent<Rigidbody2D>().position).normalized;
-                targetPosition = GlobalData.grabbedObject.GetComponent<Rigidbody2D>().position + direction * 0.7f;
+                Vector2 direction = (targetPosition - GlobalData.grabbedObject.GetComponent<Rigidbody2D>().position).normalized;
+				targetPosition = GlobalData.grabbedObject.GetComponent<Rigidbody2D>().position + direction * 0.7f;
             }
-            else
-            {
-                targetPosition = new Vector2(worldPosition.x, worldPosition.y);
-            }
-            
+
 
             GlobalData.grabbedObject.GetComponent<Rigidbody2D>().MovePosition(targetPosition);
 
@@ -101,6 +113,12 @@ public class FattyScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+		if (currentMode == "blood" && vomiting <= 0f) {
+			currentMode = "normal";
+		}
+
+		GlobalData.hoverObject--;
 
         CheckRespawn();
 
@@ -137,10 +155,10 @@ public class FattyScript : MonoBehaviour {
 
     void UpdateBlood()
     {
-        if (bleeding > 0f)
+        if (vomiting > 0f)
         {
 
-            float auxAmount = (maxBleeding - bleeding) / maxBleeding;
+            float auxAmount = (maxVomitingBlood - vomiting) / maxVomitingBlood;
 
             if (fattyJawSpring1.enabled)
             {
@@ -160,9 +178,9 @@ public class FattyScript : MonoBehaviour {
                 vomitSideL.GetComponent<ParticleSystem>().enableEmission = false;
             }
 
-            bleeding -= Time.deltaTime;
-            if (bleeding <= 0f) { 
-                bleeding = 0f;
+            vomiting -= Time.deltaTime;
+            if (vomiting <= 0f) { 
+                vomiting = 0f;
                 vomitCenter.GetComponent<ParticleSystem>().enableEmission = false;
                 vomitSideR.GetComponent<ParticleSystem>().enableEmission = false;
                 vomitSideL.GetComponent<ParticleSystem>().enableEmission = false;

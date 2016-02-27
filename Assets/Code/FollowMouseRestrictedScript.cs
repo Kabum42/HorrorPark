@@ -4,18 +4,35 @@ using System.Collections;
 public class FollowMouseRestrictedScript : MonoBehaviour {
 
     //private Vector3 originGlobal;
+	public GameObject eyeball;
     private Vector3 originLocal;
+	private TrembleScript tremble;
 
 	// Use this for initialization
 	void Start () {
 
         //originGlobal = this.transform.position;
         originLocal = this.transform.localPosition;
+		tremble = this.gameObject.AddComponent<TrembleScript> ();
+		tremble.strength = 0.025f;
+		tremble.enabled = false;
         
 	}
 	
 	// Update is called once per frame
 	void Update () {
+
+		if (Camera.main.gameObject.GetComponent<FattyScript> ().currentMode == "normal") {
+
+			eyeball.GetComponent<SpriteRenderer> ().color = Color.Lerp (eyeball.GetComponent<SpriteRenderer> ().color, new Color (1f, 1f, 1f), Time.deltaTime * 5f);
+			tremble.enabled = false;
+
+		} else if (Camera.main.gameObject.GetComponent<FattyScript> ().currentMode == "blood") {
+
+			eyeball.GetComponent<SpriteRenderer> ().color = Color.Lerp (eyeball.GetComponent<SpriteRenderer> ().color, new Color (1f, 0.85f, 0.85f), Time.deltaTime * 5f);
+			tremble.enabled = true;
+
+		}
 
         //Vector3 target = Input.mousePosition;
         Vector3 target;

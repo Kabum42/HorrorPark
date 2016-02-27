@@ -57,6 +57,7 @@
      <Compile Include="Assets\Code\Hacks.cs" />
      <Compile Include="Assets\Code\ItemScript.cs" />
      <Compile Include="Assets\Code\MainScript.cs" />
+     <Compile Include="Assets\Code\MouseIconScript.cs" />
      <Compile Include="Assets\Code\SawScript.cs" />
      <Compile Include="Assets\Code\SpawnGusano.cs" />
      <Compile Include="Assets\Code\TrembleScript.cs" />

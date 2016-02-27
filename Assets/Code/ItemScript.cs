@@ -37,6 +37,8 @@ public class ItemScript : MonoBehaviour {
 				if (addFat)
                 {
                     Camera.main.gameObject.GetComponent<FattyScript>().AddFat();
+					Camera.main.gameObject.GetComponent<FattyScript> ().gulpSound.pitch = Random.Range (0.8f, 1.2f);
+					Camera.main.gameObject.GetComponent<FattyScript> ().gulpSound.Play ();
                 }
                 
             }
