@@ -44,6 +44,8 @@ public class FattyScript : MonoBehaviour {
 	private Color bloodColor = new Color(147f/255f, 0f, 0f);
 	private float maxVomitingBlood = 4f;
 
+	private bool rainbow = false;
+
 	private List<AudioSource> audioSources = new List<AudioSource>();
 
 	private bool lastFrameObjectGrabbed = false;
@@ -102,6 +104,15 @@ public class FattyScript : MonoBehaviour {
 		currentMode = "blood";
     }
 
+	public void Rainbow() {
+		rainbow = true;
+		vomiting = maxVomitingBlood;
+		vomitCenter.GetComponent<ParticleSystem> ().startColor = bloodColor;
+		vomitSideR.GetComponent<ParticleSystem> ().startColor = bloodColor;
+		vomitSideL.GetComponent<ParticleSystem> ().startColor = bloodColor;
+		currentMode = "rainbow";
+	}
+
 
     
     void FixedUpdate()
@@ -134,18 +145,12 @@ public class FattyScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		if (currentMode == "blood" && vomiting <= 0f) {
-			currentMode = "normal";
-			handR.GetComponent<TrembleScript> ().enabled = false;
-			handL.GetComponent<TrembleScript> ().enabled = false;
-		}
-
 		GlobalData.hoverObject--;
 
         CheckRespawn();
 
         UpdateFat();
-        UpdateBlood();
+        UpdateVomit();
 
         if (GlobalData.eatableObjects > 0 && fattyJawSpring1.enabled)
         {
@@ -184,12 +189,19 @@ public class FattyScript : MonoBehaviour {
         }
     }
 
-    void UpdateBlood()
+    void UpdateVomit()
     {
         if (vomiting > 0f)
         {
 
             float auxAmount = (maxVomitingBlood - vomiting) / maxVomitingBlood;
+
+			if (rainbow) {
+				Color auxColor = Hacks.GetRainbow (bloodColor, auxAmount);
+				vomitCenter.GetComponent<ParticleSystem> ().startColor = auxColor;
+				vomitSideR.GetComponent<ParticleSystem> ().startColor = auxColor;
+				vomitSideL.GetComponent<ParticleSystem> ().startColor = auxColor;
+			}
 
             if (fattyJawSpring1.enabled)
             {
@@ -215,6 +227,10 @@ public class FattyScript : MonoBehaviour {
                 vomitCenter.GetComponent<ParticleSystem>().enableEmission = false;
                 vomitSideR.GetComponent<ParticleSystem>().enableEmission = false;
                 vomitSideL.GetComponent<ParticleSystem>().enableEmission = false;
+				rainbow = false;
+				handR.GetComponent<TrembleScript> ().enabled = false;
+				handL.GetComponent<TrembleScript> ().enabled = false;
+				currentMode = "normal";
             }
         }
     }

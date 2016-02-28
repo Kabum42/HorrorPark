@@ -185,4 +185,17 @@ public static class Hacks
         }
     }
 
+	// RAINBOW
+	public static Color GetRainbow(Color source, float hueAmount)
+	{
+		float hueSource = 0f;
+		float saturationSource = 0f;
+		float valueSource = 0f;
+		Color.RGBToHSV (source, out hueSource, out saturationSource, out valueSource);
+
+		Color newColor = Color.HSVToRGB(hueSource + hueAmount, saturationSource, valueSource);
+
+		return newColor;
+	}
+
 }

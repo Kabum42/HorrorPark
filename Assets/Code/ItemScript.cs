@@ -5,6 +5,7 @@ public class ItemScript : MonoBehaviour {
 
 	public bool addFat = false;
     public bool bloody = false;
+	public bool rainbow = false;
     public bool digested = false;
     public float letGo = 0f;
 
@@ -29,7 +30,17 @@ public class ItemScript : MonoBehaviour {
         if (digested && this.transform.position.y < -1.5f)
         {
             if (this.transform.position.x > -2f && this.transform.position.x < 2f) {
+				
                 Destroy(this.gameObject);
+
+				if (addFat)
+				{
+					Camera.main.gameObject.GetComponent<FattyScript> ().AddFat();
+					AudioSource aS = Camera.main.gameObject.GetComponent<FattyScript> ().GetUnusedAudioSource ();
+					aS.clip = Resources.Load("Sound/Gulp") as AudioClip;
+					aS.pitch = Random.Range (0.8f, 1.2f);
+					aS.Play ();
+				}
                 if (bloody)
                 {
                     Camera.main.gameObject.GetComponent<FattyScript>().Blood();
@@ -38,14 +49,11 @@ public class ItemScript : MonoBehaviour {
 					aS.pitch = Random.Range (0.7f, 0.9f);
 					aS.Play ();
                 }
-				if (addFat)
-                {
-                    Camera.main.gameObject.GetComponent<FattyScript> ().AddFat();
-					AudioSource aS = Camera.main.gameObject.GetComponent<FattyScript> ().GetUnusedAudioSource ();
-					aS.clip = Resources.Load("Sound/Gulp") as AudioClip;
-					aS.pitch = Random.Range (0.8f, 1.2f);
-					aS.Play ();
-                }
+				if (rainbow)
+				{
+					Camera.main.gameObject.GetComponent<FattyScript> ().Rainbow();
+				}
+
                 
             }
             else {
