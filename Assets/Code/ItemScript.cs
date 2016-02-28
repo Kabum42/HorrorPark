@@ -33,12 +33,18 @@ public class ItemScript : MonoBehaviour {
                 if (bloody)
                 {
                     Camera.main.gameObject.GetComponent<FattyScript>().Blood();
+					AudioSource aS = Camera.main.gameObject.GetComponent<FattyScript> ().GetUnusedAudioSource ();
+					aS.clip = Resources.Load("Sound/Knife") as AudioClip;
+					aS.pitch = Random.Range (0.7f, 0.9f);
+					aS.Play ();
                 }
 				if (addFat)
                 {
-                    Camera.main.gameObject.GetComponent<FattyScript>().AddFat();
-					Camera.main.gameObject.GetComponent<FattyScript> ().gulpSound.pitch = Random.Range (0.8f, 1.2f);
-					Camera.main.gameObject.GetComponent<FattyScript> ().gulpSound.Play ();
+                    Camera.main.gameObject.GetComponent<FattyScript> ().AddFat();
+					AudioSource aS = Camera.main.gameObject.GetComponent<FattyScript> ().GetUnusedAudioSource ();
+					aS.clip = Resources.Load("Sound/Gulp") as AudioClip;
+					aS.pitch = Random.Range (0.8f, 1.2f);
+					aS.Play ();
                 }
                 
             }

@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Linq;
 //using System;
-//using System.Collections.Generic;
+using System.Collections.Generic;
 
 public class FattyScript : MonoBehaviour {
 
@@ -19,6 +19,8 @@ public class FattyScript : MonoBehaviour {
     public SpringJoint2D fattyJawSpring4;
     public GameObject fatController;
 	public GameObject mollasController;
+	public GameObject handR;
+	public GameObject handL;
 
     public GameObject vomitCenter;
     private float vomitCenterMaxRate;
@@ -42,7 +44,9 @@ public class FattyScript : MonoBehaviour {
 	private Color bloodColor = new Color(147f/255f, 0f, 0f);
 	private float maxVomitingBlood = 4f;
 
-	public AudioSource gulpSound;
+	private List<AudioSource> audioSources = new List<AudioSource>();
+
+	private bool lastFrameObjectGrabbed = false;
 
 	// Use this for initialization
 	void Start () {
@@ -61,9 +65,21 @@ public class FattyScript : MonoBehaviour {
         bubbleR.GetComponent<ParticleSystem>().enableEmission = false;
         bubbleL.GetComponent<ParticleSystem>().enableEmission = false;
 
-		gulpSound = this.gameObject.AddComponent<AudioSource> ();
-		gulpSound.clip = Resources.Load("Sound/Gulp") as AudioClip;
-		gulpSound.playOnAwake = false;
+	}
+
+	public AudioSource GetUnusedAudioSource() {
+
+		for (int i = 0; i < audioSources.Count; i++) {
+			if (!audioSources [i].isPlaying) {
+				return audioSources [i];
+				break;
+			}
+		}
+
+		AudioSource newAudioSource = this.gameObject.AddComponent<AudioSource> ();
+		newAudioSource.playOnAwake = false;
+		audioSources.Add (newAudioSource);
+		return newAudioSource;
 
 	}
 
@@ -79,6 +95,10 @@ public class FattyScript : MonoBehaviour {
 		vomitCenter.GetComponent<ParticleSystem> ().startColor = bloodColor;
 		vomitSideR.GetComponent<ParticleSystem> ().startColor = bloodColor;
 		vomitSideL.GetComponent<ParticleSystem> ().startColor = bloodColor;
+		handR.GetComponent<TrembleScript> ().strength = 0.5f;
+		handL.GetComponent<TrembleScript> ().strength = 0.5f;
+		handR.GetComponent<TrembleScript> ().enabled = true;
+		handL.GetComponent<TrembleScript> ().enabled = true;
 		currentMode = "blood";
     }
 
@@ -116,6 +136,8 @@ public class FattyScript : MonoBehaviour {
 
 		if (currentMode == "blood" && vomiting <= 0f) {
 			currentMode = "normal";
+			handR.GetComponent<TrembleScript> ().enabled = false;
+			handL.GetComponent<TrembleScript> ().enabled = false;
 		}
 
 		GlobalData.hoverObject--;
@@ -133,6 +155,15 @@ public class FattyScript : MonoBehaviour {
         {
             CloseMouth();
         }
+
+		bool aux = lastFrameObjectGrabbed;
+		lastFrameObjectGrabbed = !(GlobalData.grabbedObject == null);
+		if (aux != lastFrameObjectGrabbed) {
+			AudioSource aS = this.GetUnusedAudioSource ();
+			aS.clip = Resources.Load("Sound/tap-mellow") as AudioClip;
+			aS.pitch = Random.Range (0.8f, 1.2f);
+			aS.Play ();
+		}
 
 	}
 
