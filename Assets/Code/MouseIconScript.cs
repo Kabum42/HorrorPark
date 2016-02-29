@@ -10,7 +10,7 @@ public class MouseIconScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 	
-		Cursor.visible = false;
+		//Cursor.visible = false;
 		mouseHover.SetActive (false);
 		mouseGrabbed.SetActive (false);
 

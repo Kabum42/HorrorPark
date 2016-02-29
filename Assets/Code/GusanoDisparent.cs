@@ -11,14 +11,13 @@ public class GusanoDisparent : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        if (this.gameObject.transform.parent != null && this.GetComponent<SpringJoint2D>() == null)
+        if (this.gameObject.transform.parent != null && this.GetComponent<HingeJoint2D>() == null)
         {
             this.gameObject.transform.parent = null;
-			//if (this.gameObject.layer == LayerMask.NameToLayer("
-			this.gameObject.layer = LayerMask.NameToLayer("Default");
+            //Hacks.SetLayerRecursively(this.gameObject, LayerMask.NameToLayer("Default"));
+            this.gameObject.GetComponent<CircleCollider2D>().enabled = true;
+			//this.gameObject.layer = LayerMask.NameToLayer("Default");
 			ItemScript i = this.gameObject.AddComponent<ItemScript> ();
-			i.addFat = false;
-			i.bloody = false;
         }
 	
 	}

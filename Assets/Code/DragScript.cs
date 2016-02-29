@@ -20,9 +20,9 @@ public class DragScript : MonoBehaviour
         if (GlobalData.grabbedObject == this.gameObject)
         {
             Vector2 direction = new Vector2(GlobalData.lastMouseInertia.x, GlobalData.lastMouseInertia.y);
-            if (direction.magnitude > 40f)
+            if (direction.magnitude > 20f)
             {
-                direction = direction.normalized * 40f;
+                direction = direction.normalized * 20f;
             }
             GlobalData.grabbedObject.GetComponent<Rigidbody2D>().velocity = direction;
             GlobalData.grabbedObject = null;

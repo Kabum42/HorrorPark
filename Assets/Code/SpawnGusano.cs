@@ -3,7 +3,7 @@ using System.Collections;
 
 public class SpawnGusano : MonoBehaviour {
 	public GameObject source;
-	public SpringJoint2D spring;
+	public HingeJoint2D hinge;
 	private float time;
 	private int ammo;
 	[Range(0f,10f)]
@@ -36,10 +36,10 @@ public class SpawnGusano : MonoBehaviour {
 			newGameObject.transform.parent = this.transform;
 			newGameObject.transform.localPosition = Vector3.zero;
 
-			SpringJoint2D newSpringJoint2D = newGameObject.GetComponent<SpringJoint2D> ();
-			SpringJoint2D auxSpring = newSpringJoint2D;
-			auxSpring.breakForce = breakForceParticles;
-			newSpringJoint2D = auxSpring;
+			HingeJoint2D newHingeJoint2D = newGameObject.GetComponent<HingeJoint2D> ();
+			HingeJoint2D auxHinge = newHingeJoint2D;
+			auxHinge.breakForce = breakForceParticles;
+			newHingeJoint2D = auxHinge;
 
 			newGameObject.SetActive(true);
 		}
@@ -57,10 +57,10 @@ public class SpawnGusano : MonoBehaviour {
 			newGameObject.transform.parent = this.transform;
 			newGameObject.transform.localPosition = Vector3.zero;
 
-			SpringJoint2D newSpringJoint2D = newGameObject.GetComponent<SpringJoint2D> ();
-			SpringJoint2D auxSpring = newSpringJoint2D;
-			auxSpring.breakForce = breakForceParticles;
-			newSpringJoint2D = auxSpring;
+            HingeJoint2D newHingeJoint2D = newGameObject.GetComponent<HingeJoint2D>();
+            HingeJoint2D auxHinge = newHingeJoint2D;
+            auxHinge.breakForce = breakForceParticles;
+            newHingeJoint2D = auxHinge;
 
 			newGameObject.SetActive (true);
 

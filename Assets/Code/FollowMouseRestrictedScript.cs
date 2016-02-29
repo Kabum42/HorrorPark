@@ -31,9 +31,9 @@ public class FollowMouseRestrictedScript : MonoBehaviour {
 
 		} else if (Camera.main.gameObject.GetComponent<FattyScript> ().currentMode == "blood") {
 
-			float aux = Mathf.Lerp (this.gameObject.transform.localScale.x, 1f, Time.deltaTime * 5f);
+			float aux = Mathf.Lerp (this.gameObject.transform.localScale.x, 0.8f, Time.deltaTime * 5f);
 			this.gameObject.transform.localScale = new Vector3 (aux, aux, this.gameObject.transform.localScale.z);
-			eyeball.GetComponent<SpriteRenderer> ().color = Color.Lerp (eyeball.GetComponent<SpriteRenderer> ().color, new Color (1f, 0.85f, 0.85f), Time.deltaTime * 5f);
+			eyeball.GetComponent<SpriteRenderer> ().color = Color.Lerp (eyeball.GetComponent<SpriteRenderer> ().color, new Color (1f, 0.7f, 0.7f), Time.deltaTime * 5f);
 			tremble.enabled = true;
 
 		} else if (Camera.main.gameObject.GetComponent<FattyScript> ().currentMode == "rainbow") {

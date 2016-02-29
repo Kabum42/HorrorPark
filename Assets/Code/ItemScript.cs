@@ -45,9 +45,11 @@ public class ItemScript : MonoBehaviour {
                 {
                     Camera.main.gameObject.GetComponent<FattyScript>().Blood();
 					AudioSource aS = Camera.main.gameObject.GetComponent<FattyScript> ().GetUnusedAudioSource ();
-					aS.clip = Resources.Load("Sound/Knife") as AudioClip;
-					aS.pitch = Random.Range (0.7f, 0.9f);
-					aS.Play ();
+                    int random = Random.Range(1, 3);
+                    aS.clip = Resources.Load("Sound/FattyScreamHurt" + random) as AudioClip;
+                    aS.pitch = Random.Range(0.8f, 1f);
+                    Camera.main.gameObject.GetComponent<FattyScript>().screamCooldown = (aS.clip.length / aS.pitch) + 0.5f;
+                    aS.Play();
                 }
 				if (rainbow)
 				{

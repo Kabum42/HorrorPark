@@ -46,16 +46,16 @@ public class SawScript : MonoBehaviour {
 	
 	}
 
-    void OnCollisionEnter2D(Collision2D coll)
+    void OnTriggerEnter2D(Collider2D other)
     {
 
-        if (coll.gameObject.GetComponent<ItemScript>() != null)
+        if (other.gameObject.GetComponent<ItemScript>() != null)
         {
-            if (GlobalData.grabbedObject == coll.gameObject)
+            if (GlobalData.grabbedObject == other.gameObject)
             {
                 GlobalData.grabbedObject = null;
             }
-            SawingObject sO = new SawingObject(coll.gameObject);
+            SawingObject sO = new SawingObject(other.gameObject);
 			//if (sO.root.GetComponent<Gusano> ()) { Destroy(sO.root.GetComponent<Gusano>()); }
 			//if (sO.root.GetComponent<HingeJoint2D> ()) { Destroy(sO.root.GetComponent<HingeJoint2D>()); }
 			//if (sO.root.GetComponent<SpringJoint2D> ()) { Destroy(sO.root.GetComponent<SpringJoint2D>()); }

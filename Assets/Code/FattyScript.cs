@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 public class FattyScript : MonoBehaviour {
 
-    private static float cooldownRespawnMax = 2f;
+    private static float cooldownRespawnMax = 4f;
     private float cooldownRespawn = 0f;
     private Vector3 respawnLocation = new Vector3(-20f, 1f, -3f);
 
@@ -42,13 +42,22 @@ public class FattyScript : MonoBehaviour {
 	private float vomiting = 0f;
 
 	private Color bloodColor = new Color(147f/255f, 0f, 0f);
-	private float maxVomitingBlood = 4f;
+	private float maxVomitingBlood = 2f;
 
 	private bool rainbow = false;
 
 	private List<AudioSource> audioSources = new List<AudioSource>();
 
 	private bool lastFrameObjectGrabbed = false;
+
+    private bool mouthOrder = false;
+
+    public float screamCooldown = 0f;
+    private bool lipsOpen = true;
+    private float lipsRefresh = 0f;
+    private static float lipsOpenCooldown = 0.5f;
+    private static float lipsCloseCooldown = 0.05f;
+    private float teasing = 0f;
 
 	// Use this for initialization
 	void Start () {
@@ -93,14 +102,15 @@ public class FattyScript : MonoBehaviour {
 
     public void Blood()
     {
+        rainbow = false;
         vomiting = maxVomitingBlood;
 		vomitCenter.GetComponent<ParticleSystem> ().startColor = bloodColor;
 		vomitSideR.GetComponent<ParticleSystem> ().startColor = bloodColor;
 		vomitSideL.GetComponent<ParticleSystem> ().startColor = bloodColor;
+        bubbleR.GetComponent<ParticleSystem>().startColor = bloodColor;
+        bubbleL.GetComponent<ParticleSystem>().startColor = bloodColor;
 		handR.GetComponent<TrembleScript> ().strength = 0.5f;
 		handL.GetComponent<TrembleScript> ().strength = 0.5f;
-		handR.GetComponent<TrembleScript> ().enabled = true;
-		handL.GetComponent<TrembleScript> ().enabled = true;
 		currentMode = "blood";
     }
 
@@ -145,10 +155,24 @@ public class FattyScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
+        mouthOrder = false;
+
 		GlobalData.hoverObject--;
 
-        CheckRespawn();
+        if (screamCooldown > 0f)
+        {
+            screamCooldown -= Time.deltaTime;
+            if (screamCooldown <= 0f) { 
+                screamCooldown = 0f;
+                lipsOpen = true;
+                lipsRefresh = 0f;
+            }
+        }
 
+        CheckRespawn();
+        CheckTeasing();
+
+        LipSyncing();
         UpdateFat();
         UpdateVomit();
 
@@ -160,7 +184,7 @@ public class FattyScript : MonoBehaviour {
         {
             CloseMouth();
         }
-
+        
 		bool aux = lastFrameObjectGrabbed;
 		lastFrameObjectGrabbed = !(GlobalData.grabbedObject == null);
 		if (aux != lastFrameObjectGrabbed) {
@@ -171,6 +195,51 @@ public class FattyScript : MonoBehaviour {
 		}
 
 	}
+
+    void CheckTeasing()
+    {
+        if (GlobalData.grabbedObject != null)
+        {
+            teasing += Time.deltaTime*Random.Range(0.5f, 2f);
+        }
+        else
+        {
+            teasing = 0f;
+        }
+
+        if (GlobalData.eatableObjects > 0 && screamCooldown <= 0f && teasing > 10f)
+        {
+            AudioSource aS = Camera.main.gameObject.GetComponent<FattyScript>().GetUnusedAudioSource();
+            aS.clip = Resources.Load("Sound/FattyScreamHungry") as AudioClip;
+            aS.pitch = Random.Range(0.8f, 1f);
+            screamCooldown = (aS.clip.length / aS.pitch) + 0.5f;
+            aS.Play();
+            teasing = 0f;
+        }
+    }
+
+    void LipSyncing()
+    {
+        if (screamCooldown > 0.85f)
+        {
+            lipsRefresh -= Time.deltaTime;
+            if (lipsRefresh <= 0f)
+            {
+                lipsOpen = !lipsOpen;
+                if (lipsOpen) { lipsRefresh = lipsOpenCooldown; }
+                else { lipsRefresh = lipsCloseCooldown; }
+            }
+            
+            if (lipsOpen)
+            {
+                OpenMouth();
+            }
+            else
+            {
+                CloseMouth();
+            }
+        }
+    }
 
     void UpdateFat()
     {
@@ -195,6 +264,11 @@ public class FattyScript : MonoBehaviour {
         {
 
             float auxAmount = (maxVomitingBlood - vomiting) / maxVomitingBlood;
+
+            if (auxAmount < 0.5f)
+            {
+                OpenMouth();
+            }
 
 			if (rainbow) {
 				Color auxColor = Hacks.GetRainbow (bloodColor, auxAmount);
@@ -228,8 +302,6 @@ public class FattyScript : MonoBehaviour {
                 vomitSideR.GetComponent<ParticleSystem>().enableEmission = false;
                 vomitSideL.GetComponent<ParticleSystem>().enableEmission = false;
 				rainbow = false;
-				handR.GetComponent<TrembleScript> ().enabled = false;
-				handL.GetComponent<TrembleScript> ().enabled = false;
 				currentMode = "normal";
             }
         }
@@ -237,18 +309,30 @@ public class FattyScript : MonoBehaviour {
 
     void OpenMouth()
     {
-        fattyJawSpring1.enabled = false;
-        fattyJawSpring2.enabled = false;
-        fattyJawSpring3.enabled = false;
-        fattyJawSpring4.enabled = false;
+        if (!mouthOrder)
+        {
+            mouthOrder = true;
+            fattyJawSpring1.enabled = false;
+            fattyJawSpring2.enabled = false;
+            fattyJawSpring3.enabled = false;
+            fattyJawSpring4.enabled = false;
+            handR.GetComponent<TrembleScript>().enabled = true;
+            handL.GetComponent<TrembleScript>().enabled = true;
+        }
     }
 
     void CloseMouth()
     {
-        fattyJawSpring1.enabled = true;
-        fattyJawSpring2.enabled = true;
-        fattyJawSpring3.enabled = true;
-        fattyJawSpring4.enabled = true;
+        if (!mouthOrder)
+        {
+            mouthOrder = true;
+            fattyJawSpring1.enabled = true;
+            fattyJawSpring2.enabled = true;
+            fattyJawSpring3.enabled = true;
+            fattyJawSpring4.enabled = true;
+            handR.GetComponent<TrembleScript>().enabled = false;
+            handL.GetComponent<TrembleScript>().enabled = false;
+        }
     }
 
     void CheckRespawn()
