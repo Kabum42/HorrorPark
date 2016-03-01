@@ -29,6 +29,11 @@ public class FattyScript : MonoBehaviour {
     private float vomitSidesMaxRate;
     public GameObject bubbleR;
     public GameObject bubbleL;
+    public GameObject hidingObject1;
+    public GameObject hidingObject2;
+    public GameObject hidingObject3;
+    public GameObject hidingObject4;
+    public GameObject conveyor;
 
     public AnimationCurve vomitAmount;
 
@@ -59,6 +64,15 @@ public class FattyScript : MonoBehaviour {
     private static float lipsCloseCooldown = 0.05f;
     private float teasing = 0f;
 
+    public bool alive = true;
+    private float deathTime = 0f;
+    public AnimationCurve deathSpeed;
+    private Vector3 initialDeathScale;
+    public Vector3 finalDeathScale = new Vector3(10f, 10f, 1f);
+    public float timeLerpingDeath = 1f;
+
+    private AudioSource conveyorLoop;
+
 	// Use this for initialization
 	void Start () {
 
@@ -75,6 +89,15 @@ public class FattyScript : MonoBehaviour {
         vomitSidesMaxRate = vomitSideR.GetComponent<ParticleSystem>().emissionRate;
         bubbleR.GetComponent<ParticleSystem>().enableEmission = false;
         bubbleL.GetComponent<ParticleSystem>().enableEmission = false;
+
+        conveyorLoop = this.gameObject.AddComponent<AudioSource>();
+        conveyorLoop.playOnAwake = false;
+        conveyorLoop.clip = Resources.Load("Sound/Cinta_Loop") as AudioClip;
+        conveyorLoop.loop = true;
+        conveyorLoop.Play();
+
+        deformation = 1.3f;
+        targetFatScale = new Vector2(maxFat, maxFat);
 
 	}
 
@@ -155,36 +178,60 @@ public class FattyScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        mouthOrder = false;
-
-		GlobalData.hoverObject--;
-
-        if (screamCooldown > 0f)
+        if (alive)
         {
-            screamCooldown -= Time.deltaTime;
-            if (screamCooldown <= 0f) { 
-                screamCooldown = 0f;
-                lipsOpen = true;
-                lipsRefresh = 0f;
+            if (Input.GetMouseButtonDown(0))
+            {
+               // Explode();
+            }
+
+            mouthOrder = false;
+
+            GlobalData.hoverObject--;
+
+            if (screamCooldown > 0f)
+            {
+                screamCooldown -= Time.deltaTime;
+                if (screamCooldown <= 0f)
+                {
+                    screamCooldown = 0f;
+                    lipsOpen = true;
+                    lipsRefresh = 0f;
+                }
+            }
+
+            CheckRespawn();
+            CheckTeasing();
+
+            LipSyncing();
+            UpdateFat();
+            UpdateVomit();
+
+            if (GlobalData.eatableObjects > 0 && fattyJawSpring1.enabled)
+            {
+                OpenMouth();
+            }
+            else if (GlobalData.eatableObjects == 0 && !fattyJawSpring1.enabled)
+            {
+                CloseMouth();
             }
         }
-
-        CheckRespawn();
-        CheckTeasing();
-
-        LipSyncing();
-        UpdateFat();
-        UpdateVomit();
-
-        if (GlobalData.eatableObjects > 0 && fattyJawSpring1.enabled)
+        else
         {
-            OpenMouth();
+            LipSyncing();
+            if (deathTime < timeLerpingDeath) { 
+                deathTime += Time.deltaTime;
+                if (deathTime >= timeLerpingDeath)
+                {
+                    deathTime = timeLerpingDeath;
+                }
+            }
+            Vector3 currentScale = initialDeathScale + (finalDeathScale-initialDeathScale)*deathSpeed.Evaluate(deathTime/timeLerpingDeath);
+            fatController.transform.localScale = currentScale;
         }
-        else if (GlobalData.eatableObjects == 0 && !fattyJawSpring1.enabled)
-        {
-            CloseMouth();
-        }
-        
+
+        MoveBelt();
+
 		bool aux = lastFrameObjectGrabbed;
 		lastFrameObjectGrabbed = !(GlobalData.grabbedObject == null);
 		if (aux != lastFrameObjectGrabbed) {
@@ -195,6 +242,32 @@ public class FattyScript : MonoBehaviour {
 		}
 
 	}
+
+    void MoveBelt()
+    {
+        float auxOffset = conveyor.GetComponent<MeshRenderer>().material.mainTextureOffset.y;
+        auxOffset -= Time.deltaTime*2.2f;
+        while (auxOffset <= -1f) { auxOffset += 1f; }
+        conveyor.GetComponent<MeshRenderer>().material.mainTextureOffset = new Vector2(0f, auxOffset);
+    }
+
+    public void Explode()
+    {
+        alive = false;
+        fatController.GetComponent<SpriteRenderer>().enabled = false;
+        hidingObject1.SetActive(false);
+        hidingObject2.SetActive(false);
+        hidingObject3.SetActive(false);
+        hidingObject4.SetActive(false);
+        initialDeathScale = fatController.transform.localScale;
+        AudioSource aS = GetUnusedAudioSource();
+        aS.clip = Resources.Load("Sound/FattyScreamHurt1") as AudioClip;
+        aS.pitch = Random.Range(0.8f, 1f);
+        screamCooldown = (aS.clip.length / aS.pitch) + 0.5f;
+        aS.Play();
+        if (fattyJawSpring1.enabled) { lipsOpen = true; lipsRefresh = lipsOpenCooldown; }
+        else { lipsOpen = false; lipsRefresh = lipsCloseCooldown; }
+    }
 
     void CheckTeasing()
     {

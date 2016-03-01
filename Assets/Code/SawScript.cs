@@ -17,14 +17,15 @@ public class SawScript : MonoBehaviour {
 
         List<SawingObject> toErase = new List<SawingObject>();
 
-        Vector3 direction = new Vector3(1f, -1f, 0f);
-        direction.Normalize();
-
         foreach (SawingObject sO in currentSawingObjects)
 	    {
 	        sO.sawingProcess += Time.deltaTime * (1f / timeToSaw);
 
 			if (sO.sawingProcess <= 1f && sO.root != null) {
+
+                Vector3 direction = (this.transform.position + new Vector3(2f, 2f, 0f)) - sO.root.transform.position;
+                direction = new Vector3(direction.x, direction.y, 0f);
+                direction.Normalize();
 
                 sO.root.transform.position = sO.origin + sO.sawingProcess * direction * 4f + new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), 0f);
 
