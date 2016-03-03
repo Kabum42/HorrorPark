@@ -94,6 +94,7 @@ public class FattyScript : MonoBehaviour {
         conveyorLoop.playOnAwake = false;
         conveyorLoop.clip = Resources.Load("Sound/Cinta_Loop") as AudioClip;
         conveyorLoop.loop = true;
+		conveyorLoop.volume = 0.2f;
         conveyorLoop.Play();
 
         deformation = 1.3f;
@@ -238,6 +239,7 @@ public class FattyScript : MonoBehaviour {
 			AudioSource aS = this.GetUnusedAudioSource ();
 			aS.clip = Resources.Load("Sound/tap-mellow") as AudioClip;
 			aS.pitch = Random.Range (0.8f, 1.2f);
+			aS.volume = 1f;
 			aS.Play ();
 		}
 
