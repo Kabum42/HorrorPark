@@ -84,7 +84,7 @@ public class ItemScript : MonoBehaviour {
             GlobalData.eatableObjects++;
             //this.GetComponent<SpriteRenderer>().color = new Color(1f, 0f, 0f);
         }
-        else if (!digested && this.gameObject.layer == LayerMask.NameToLayer("Eatable") && other.gameObject.layer == LayerMask.NameToLayer("DigestTrigger"))
+        else if (!digested && this.gameObject.layer == LayerMask.NameToLayer("Eatable") && other.gameObject.layer == LayerMask.NameToLayer("DigestTrigger") && this.gameObject.GetComponent<Rigidbody2D>().velocity.y <= 0f)
         {
             if (GlobalData.grabbedObject == this.gameObject)
             {
